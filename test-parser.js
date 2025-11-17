@@ -27,7 +27,16 @@ console.log(JSON.stringify(result3, null, 2));
 console.log('\nBody content with newlines:');
 console.log(result3.comments[0].body);
 
-console.log('\n=== Test 4: Convert back to TOON ===');
+console.log('\n=== Test 4: Single-line compact array ===');
+const toon4 = `toon[3]{postId,id,name,email,body}:
+1,1,test name,test@email.com,"line1\\nline2"
+1,2,another,test2@email.com,"text, with comma"
+1,3,third,test3@email.com,simple`;
+
+const result4 = ToonParser.toonToJson(toon4);
+console.log(JSON.stringify(result4, null, 2));
+
+console.log('\n=== Test 5: Convert back to TOON ===');
 const jsonData = {
 	comments: [
 		{

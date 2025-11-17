@@ -60,11 +60,43 @@ class ToonParser {
 			if (fields) {
 				// Compact array format: users[2]{id,name,role}:
 				if (!current[arrayKey]) current[arrayKey] = [];
-				arrayContext.push({
-					key: arrayKey,
-					fields: fields.split(','),
-					parent: current,
-				});
+
+				if (value === '') {
+					// Multi-line format - data on next lines
+					arrayContext.push({
+						key: arrayKey,
+						fields: fields.split(','),
+						parent: current,
+					});
+				} else {
+					// Data after colon - could be single-line or multi-line
+					const fieldList = fields.split(',');
+					const fieldCount = fieldList.length;
+
+					// Check if data contains newlines
+					if (value.includes('\n')) {
+						// Multi-line: split by newlines
+						const dataLines = this.splitDataLines(value);
+						dataLines.forEach((line) => {
+							const values = this.parseCSVLine(line);
+							const obj = {};
+							fieldList.forEach((field, i) => {
+								obj[field.trim()] = this.parseValue(values[i] || '');
+							});
+							current[arrayKey].push(obj);
+						});
+					} else {
+						// Single-line: parse as continuous CSV data
+						const records = this.parseCompactArrayData(value, fieldCount);
+						records.forEach((record) => {
+							const obj = {};
+							fieldList.forEach((field, i) => {
+								obj[field.trim()] = this.parseValue(record[i] || '');
+							});
+							current[arrayKey].push(obj);
+						});
+					}
+				}
 			} else if (value === '') {
 				// Array with object items: projects[2]:
 				if (!current[arrayKey]) current[arrayKey] = [];
@@ -82,6 +114,115 @@ class ToonParser {
 			// Simple value
 			current[key] = this.parseValue(value);
 		}
+	}
+
+	// Parse compact array data that might be on single line
+	// Format: field1,field2,"quoted,field",field4nextRecordField1,field2...
+	// No delimiter between records - they just continue after last field
+	static parseCompactArrayData(text, fieldCount) {
+		const records = [];
+		let i = 0;
+
+		while (i < text.length) {
+			const record = [];
+			let fieldsParsed = 0;
+
+			while (fieldsParsed < fieldCount && i < text.length) {
+				let value = '';
+				let inQuotes = false;
+				let escapeNext = false;
+
+				// Skip leading whitespace
+				while (i < text.length && text[i] === ' ') i++;
+
+				// Parse one field
+				while (i < text.length) {
+					const char = text[i];
+
+					if (escapeNext) {
+						value += char;
+						escapeNext = false;
+						i++;
+						continue;
+					}
+
+					if (char === '\\') {
+						value += char;
+						escapeNext = true;
+						i++;
+						continue;
+					}
+
+					if (char === '"') {
+						inQuotes = !inQuotes;
+						value += char;
+						i++;
+						continue;
+					}
+
+					if (char === ',' && !inQuotes) {
+						// End of field (not last field in record)
+						i++;
+						break;
+					}
+
+					// If we've parsed enough fields-1, next non-comma char ends this field
+					if (fieldsParsed === fieldCount - 1 && !inQuotes) {
+						// Last field - continues until we hit a digit (start of next record)
+						// or end of string
+						if (value.length > 0 && /\d/.test(char) && value.endsWith('"')) {
+							// We've hit the start of next record
+							break;
+						}
+					}
+
+					value += char;
+					i++;
+				}
+
+				record.push(value.trim());
+				fieldsParsed++;
+			}
+
+			if (record.length === fieldCount) {
+				records.push(record);
+			} else if (record.length > 0) {
+				// Partial record at end
+				records.push(record);
+			}
+		}
+
+		return records;
+	}
+
+	// Split data lines while respecting quoted strings
+	static splitDataLines(text) {
+		const lines = [];
+		let current = '';
+		let inQuotes = false;
+
+		for (let i = 0; i < text.length; i++) {
+			const char = text[i];
+			const prevChar = i > 0 ? text[i - 1] : '';
+
+			if (char === '"' && prevChar !== '\\') {
+				inQuotes = !inQuotes;
+				current += char;
+			} else if (char === '\n' && !inQuotes) {
+				if (current.trim()) {
+					lines.push(current.trim());
+				}
+				current = '';
+			} else {
+				current += char;
+			}
+		}
+
+		if (current.trim()) {
+			lines.push(current.trim());
+		}
+
+		return lines;
 	}
 
 	static parseArrayItem(itemData, arrayContext, currentPath) {
