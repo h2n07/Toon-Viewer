@@ -7,10 +7,11 @@ class ToonParser {
 			.trim()
 			.split('\n')
 			.filter((line) => line.trim());
-		const result = {};
+		let result = {};
 		let currentPath = [result];
 		let currentIndent = 0;
 		let arrayContext = [];
+		let isRootArray = false;
 
 		for (let line of lines) {
 			const indent = line.search(/\S/);
@@ -35,7 +36,27 @@ class ToonParser {
 				}
 
 				currentIndent = indent;
-				this.parseKeyValue(cleanKey, cleanValue, currentPath, arrayContext);
+
+				// Check if this is anonymous array format
+				if (cleanKey.match(/^\[(\d+)\](?:\{(.+?)\})?$/u)) {
+					const arrayResult = this.parseAnonymousArray(cleanKey, cleanValue);
+					if (arrayResult !== null) {
+						result = arrayResult;
+						isRootArray = true;
+						// Set up context for multi-line data
+						const anonymousMatch = cleanKey.match(/^\[(\d+)\](?:\{(.+?)\})?$/u);
+						if (anonymousMatch && anonymousMatch[2] && cleanValue === '') {
+							arrayContext.push({
+								key: null,
+								fields: anonymousMatch[2].split(','),
+								parent: null,
+								rootArray: result,
+							});
+						}
+					}
+				} else {
+					this.parseKeyValue(cleanKey, cleanValue, currentPath, arrayContext);
+				}
 			} else if (
 				arrayContext.length > 0 &&
 				arrayContext[arrayContext.length - 1].fields
@@ -51,8 +72,9 @@ class ToonParser {
 	static parseKeyValue(key, value, currentPath, arrayContext) {
 		const current = currentPath[currentPath.length - 1];
 
-		// Check for array notation: key[n] - support Unicode characters
+		// Check for array notation: key[n] or anonymous [n] - support Unicode characters
 		const arrayMatch = key.match(/^(.+?)\[(\d+)\](?:\{(.+?)\})?$/u);
+		const anonymousArrayMatch = key.match(/^\[(\d+)\](?:\{(.+?)\})?$/u);
 
 		if (arrayMatch) {
 			const [, arrayKey, count, fields] = arrayMatch;
@@ -105,6 +127,56 @@ class ToonParser {
 			} else {
 				// Simple array: techStack[3]: Python,React,Kubernetes
 				current[arrayKey] = value.split(',').map((v) => v.trim());
+			}
+		} else if (anonymousArrayMatch) {
+			// Anonymous array format: [5]{postId,id,name,email,body}:
+			const [, count, fields] = anonymousArrayMatch;
+
+			if (fields) {
+				// Return as root array instead of object with array property
+				const fieldList = fields.split(',');
+				const fieldCount = fieldList.length;
+
+				// Clear current object and make it an array
+				Object.keys(current).forEach((key) => delete current[key]);
+				const resultArray = [];
+
+				if (value === '') {
+					// Multi-line format - data on next lines
+					arrayContext.push({
+						key: null, // null key indicates root array
+						fields: fieldList,
+						parent: null,
+						rootArray: resultArray,
+					});
+				} else {
+					// Data after colon - could be single-line or multi-line
+					if (value.includes('\n')) {
+						// Multi-line: split by newlines
+						const dataLines = this.splitDataLines(value);
+						dataLines.forEach((line) => {
+							const values = this.parseCSVLine(line);
+							const obj = {};
+							fieldList.forEach((field, i) => {
+								obj[field.trim()] = this.parseValue(values[i] || '');
+							});
+							resultArray.push(obj);
+						});
+					} else {
+						// Single-line: parse as continuous CSV data
+						const records = this.parseCompactArrayData(value, fieldCount);
+						records.forEach((record) => {
+							const obj = {};
+							fieldList.forEach((field, i) => {
+								obj[field.trim()] = this.parseValue(record[i] || '');
+							});
+							resultArray.push(obj);
+						});
+					}
+				}
+
+				// Replace current object with array
+				return resultArray;
 			}
 		} else if (value === '') {
 			// Nested object
@@ -237,7 +309,14 @@ class ToonParser {
 			context.fields.forEach((field, i) => {
 				obj[field.trim()] = this.parseValue(values[i] || '');
 			});
-			context.parent[context.key].push(obj);
+
+			if (context.rootArray) {
+				// Anonymous array - push to root array
+				context.rootArray.push(obj);
+			} else {
+				// Named array - push to parent[key]
+				context.parent[context.key].push(obj);
+			}
 		} else {
 			// Regular object item
 			const arr = currentPath[currentPath.length - 1];
@@ -400,6 +479,51 @@ class ToonParser {
 		}
 
 		return strValue;
+	}
+
+	// Parse anonymous array format: [5]{postId,id,name,email,body}:
+	static parseAnonymousArray(key, value) {
+		const anonymousMatch = key.match(/^\[(\d+)\](?:\{(.+?)\})?$/u);
+
+		if (anonymousMatch) {
+			const [, count, fields] = anonymousMatch;
+
+			if (fields) {
+				const fieldList = fields.split(',');
+				const fieldCount = fieldList.length;
+				const resultArray = [];
+
+				if (value !== '') {
+					// Data after colon - could be single-line or multi-line
+					if (value.includes('\n')) {
+						// Multi-line: split by newlines
+						const dataLines = this.splitDataLines(value);
+						dataLines.forEach((line) => {
+							const values = this.parseCSVLine(line);
+							const obj = {};
+							fieldList.forEach((field, i) => {
+								obj[field.trim()] = this.parseValue(values[i] || '');
+							});
+							resultArray.push(obj);
+						});
+					} else {
+						// Single-line: parse as continuous CSV data
+						const records = this.parseCompactArrayData(value, fieldCount);
+						records.forEach((record) => {
+							const obj = {};
+							fieldList.forEach((field, i) => {
+								obj[field.trim()] = this.parseValue(record[i] || '');
+							});
+							resultArray.push(obj);
+						});
+					}
+				}
+
+				return resultArray;
+			}
+		}
+
+		return null;
 	}
 }
 

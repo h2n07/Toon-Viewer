@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 1.1.0
+
+### ✨ Tính năng mới
+
+- � **Anonymous Arrays**: Hỗ trợ format `[5]{fields}:` (không cần tên array)
+- � **Siungle-line CSV**: Parse tất cả records trên 1 dòng liền mạch
+- � **Impproved Parser**: Logic parse nâng cao cho continuous data
+
+### �\* Cập nhật
+
+- Thêm `parseAnonymousArray()` method
+- Cải thiện `parseCompactArrayData()` cho single-line format
+- Cập nhật content detection pattern
+- Thêm test cases và demo files
+
 ## Version 1.0.0
 
 ### ✨ Tính năng chính
@@ -72,13 +87,14 @@
 ### 📝 Files
 
 - `manifest.json` - Chrome extension config (Manifest V3)
-- `parser.js` - TOON ↔ JSON parser với CSV support
+- `parser.js` - TOON ↔ JSON parser với CSV support + anonymous arrays
 - `content.js` - Auto-detect và render TOON content
 - `styles.css` - 4 themes với syntax highlighting
-- `test-converter.html` - Offline converter tool
+- `test-converter.html` - Offline converter tool (5 examples)
 - `demo.html` - Demo file (English)
 - `demo-vietnamese.html` - Demo file (Tiếng Việt)
 - `demo-comments.html` - Demo file (CSV format)
+- `demo-anonymous.html` - Demo file (Anonymous arrays) **NEW**
 
 ### 🧪 Testing
 
@@ -100,6 +116,7 @@ node test-parser.js
 
 None at this time!
 
-### 📅 Release Date
+### 📅 Release Dates
 
-November 17, 2025
+- **v1.1.0**: November 17, 2025 (Anonymous Arrays)
+- **v1.0.0**: November 17, 2025 (Initial Release)

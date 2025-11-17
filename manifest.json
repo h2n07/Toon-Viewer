@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "TOON Viewer",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "View and convert TOON format data with syntax highlighting and multiple themes",
 	"permissions": ["storage"],
 	"content_scripts": [
@@ -17,7 +17,7 @@
 			"resources": ["viewer.html", "viewer.js", "styles.css"],
 			"matches": ["<all_urls>"]
 		}
-	]
+	],
 	"icons": {
 		"16": "icons/icon16.png",
 		"48": "icons/icon48.png",

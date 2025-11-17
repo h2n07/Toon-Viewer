@@ -17,6 +17,7 @@
 		const toonPatterns = [
 			/^[^\s:]+:/mu, // key: value
 			/^[^\s:]+\[\d+\]:/mu, // array[n]:
+			/^\[\d+\](?:\{[^}]+\})?:/mu, // anonymous array: [5]{fields}:
 			/^  [^\s:]+:/mu, // indented key
 			/^- [^\s:]+:/mu, // array item
 		];
