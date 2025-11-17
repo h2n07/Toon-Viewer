@@ -1,0 +1,26 @@
+{
+	"manifest_version": 3,
+	"name": "TOON Viewer",
+	"version": "1.0.0",
+	"description": "View and convert TOON format data with syntax highlighting and multiple themes",
+	"permissions": ["storage"],
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["parser.js", "content.js"],
+			"css": ["styles.css"],
+			"run_at": "document_end"
+		}
+	],
+	"web_accessible_resources": [
+		{
+			"resources": ["viewer.html", "viewer.js", "styles.css"],
+			"matches": ["<all_urls>"]
+		}
+	]
+	"icons": {
+		"16": "icons/icon16.png",
+		"48": "icons/icon48.png",
+		"128": "icons/icon128.png"
+	}
+}

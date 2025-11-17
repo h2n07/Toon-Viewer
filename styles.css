@@ -1,0 +1,391 @@
+/* TOON Viewer Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#toon-viewer {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.toon-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid;
+    flex-shrink: 0;
+}
+
+.toolbar-left,
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn {
+    padding: 6px 16px;
+    border: 1px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+.theme-select {
+    padding: 6px 10px;
+    border: 1px solid;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.toon-content {
+    flex: 1;
+    overflow: auto;
+    padding: 20px;
+    white-space: pre;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    unicode-bidi: embed;
+    word-wrap: break-word;
+}
+
+/* Syntax highlighting */
+.key {
+    font-weight: bold;
+}
+
+.array-notation {
+    font-weight: bold;
+}
+
+.fields {
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.array-marker {
+    font-weight: bold;
+}
+
+.string {
+    font-style: normal;
+}
+
+.number {
+    font-weight: 500;
+}
+
+.boolean {
+    font-weight: 600;
+}
+
+.punctuation {
+    opacity: 0.7;
+}
+
+/* Dark Theme */
+.theme-dark {
+    background: #1e1e1e;
+    color: #d4d4d4;
+}
+
+.theme-dark .toon-toolbar {
+    background: #252526;
+    border-bottom-color: #3e3e42;
+}
+
+.theme-dark .btn {
+    background: #0e639c;
+    color: #ffffff;
+    border-color: #0e639c;
+}
+
+.theme-dark .btn:hover {
+    background: #1177bb;
+}
+
+.theme-dark .theme-select {
+    background: #3c3c3c;
+    color: #cccccc;
+    border-color: #3e3e42;
+}
+
+.theme-dark .key {
+    color: #9cdcfe;
+}
+
+.theme-dark .array-notation {
+    color: #4ec9b0;
+}
+
+.theme-dark .fields {
+    color: #4fc1ff;
+}
+
+.theme-dark .array-marker {
+    color: #c586c0;
+}
+
+.theme-dark .string {
+    color: #ce9178;
+}
+
+.theme-dark .number {
+    color: #b5cea8;
+}
+
+.theme-dark .boolean {
+    color: #569cd6;
+}
+
+.theme-dark .punctuation {
+    color: #808080;
+}
+
+/* Light Theme */
+.theme-light {
+    background: #ffffff;
+    color: #000000;
+}
+
+.theme-light .toon-toolbar {
+    background: #f3f3f3;
+    border-bottom-color: #e0e0e0;
+}
+
+.theme-light .btn {
+    background: #007acc;
+    color: #ffffff;
+    border-color: #007acc;
+}
+
+.theme-light .btn:hover {
+    background: #005a9e;
+}
+
+.theme-light .theme-select {
+    background: #ffffff;
+    color: #000000;
+    border-color: #d0d0d0;
+}
+
+.theme-light .key {
+    color: #0451a5;
+}
+
+.theme-light .array-notation {
+    color: #098658;
+}
+
+.theme-light .fields {
+    color: #0070c1;
+}
+
+.theme-light .array-marker {
+    color: #af00db;
+}
+
+.theme-light .string {
+    color: #a31515;
+}
+
+.theme-light .number {
+    color: #098658;
+}
+
+.theme-light .boolean {
+    color: #0000ff;
+}
+
+.theme-light .punctuation {
+    color: #808080;
+}
+
+/* Monokai Theme */
+.theme-monokai {
+    background: #272822;
+    color: #f8f8f2;
+}
+
+.theme-monokai .toon-toolbar {
+    background: #1e1f1c;
+    border-bottom-color: #3e3d32;
+}
+
+.theme-monokai .btn {
+    background: #66d9ef;
+    color: #272822;
+    border-color: #66d9ef;
+}
+
+.theme-monokai .btn:hover {
+    background: #a1efe4;
+}
+
+.theme-monokai .theme-select {
+    background: #3e3d32;
+    color: #f8f8f2;
+    border-color: #75715e;
+}
+
+.theme-monokai .key {
+    color: #f92672;
+}
+
+.theme-monokai .array-notation {
+    color: #a6e22e;
+}
+
+.theme-monokai .fields {
+    color: #66d9ef;
+}
+
+.theme-monokai .array-marker {
+    color: #ae81ff;
+}
+
+.theme-monokai .string {
+    color: #e6db74;
+}
+
+.theme-monokai .number {
+    color: #ae81ff;
+}
+
+.theme-monokai .boolean {
+    color: #ae81ff;
+}
+
+.theme-monokai .punctuation {
+    color: #f8f8f2;
+}
+
+/* GitHub Theme */
+.theme-github {
+    background: #ffffff;
+    color: #24292e;
+}
+
+.theme-github .toon-toolbar {
+    background: #f6f8fa;
+    border-bottom-color: #e1e4e8;
+}
+
+.theme-github .btn {
+    background: #2ea44f;
+    color: #ffffff;
+    border-color: #2ea44f;
+}
+
+.theme-github .btn:hover {
+    background: #2c974b;
+}
+
+.theme-github .theme-select {
+    background: #ffffff;
+    color: #24292e;
+    border-color: #d1d5da;
+}
+
+.theme-github .key {
+    color: #005cc5;
+}
+
+.theme-github .array-notation {
+    color: #22863a;
+}
+
+.theme-github .fields {
+    color: #6f42c1;
+}
+
+.theme-github .array-marker {
+    color: #d73a49;
+}
+
+.theme-github .string {
+    color: #032f62;
+}
+
+.theme-github .number {
+    color: #005cc5;
+}
+
+.theme-github .boolean {
+    color: #005cc5;
+}
+
+.theme-github .punctuation {
+    color: #6a737d;
+}
+
+/* Scrollbar styling */
+.toon-content::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.theme-dark .toon-content::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.theme-dark .toon-content::-webkit-scrollbar-thumb {
+    background: #424242;
+    border-radius: 6px;
+}
+
+.theme-dark .toon-content::-webkit-scrollbar-thumb:hover {
+    background: #4e4e4e;
+}
+
+.theme-light .toon-content::-webkit-scrollbar-track,
+.theme-github .toon-content::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+.theme-light .toon-content::-webkit-scrollbar-thumb,
+.theme-github .toon-content::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border-radius: 6px;
+}
+
+.theme-light .toon-content::-webkit-scrollbar-thumb:hover,
+.theme-github .toon-content::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+}
+
+.theme-monokai .toon-content::-webkit-scrollbar-track {
+    background: #272822;
+}
+
+.theme-monokai .toon-content::-webkit-scrollbar-thumb {
+    background: #49483e;
+    border-radius: 6px;
+}
+
+.theme-monokai .toon-content::-webkit-scrollbar-thumb:hover {
+    background: #5e5d52;
+}
